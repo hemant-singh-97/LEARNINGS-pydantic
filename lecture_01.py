@@ -8,7 +8,7 @@ class Student(BaseModel):
     id: UUID
     name: str
     date_of_birth: date
-    GPA: confloat(gt=0.0, lt=5.0)
+    GPA: confloat(ge=0.0, le=5.0)
     course: str | None
     department: DepartmentEnum
     fees_paid: bool
@@ -27,6 +27,21 @@ for item in data1:
     print("Object:", student)               # Pydantic model object -> Direct object
     print("Dict:", student.dict())          # Dictionary representation -> A Dictionary with values as python objects
     print("JSON:", type(student.json()))    # JSON representation -> A JSON string
+    print("-"*20)
+
+wrong_gpa_student = {
+    "id": "d15782d9-3d8f-4624-a88b-c8e836569df8",
+    "name": "Eric Travix",
+    "date_of_birth": "1995-05-25",
+    "GPA": "5.1",
+    "course": "Computer Science",
+    "department": "Science and Engineering",
+    "fees_paid": False
+}
+try :
+    student = Student(**wrong_gpa_student)
+except Exception as e:
+    print(f"Error: {e}")
     print("-"*20)
 
 underage_student = {
