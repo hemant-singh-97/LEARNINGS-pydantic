@@ -1,4 +1,5 @@
-from pydantic import BaseModel, confloat, validator
+from pydantic import BaseModel, field_validator, Field
+from typing import Annotated, Any, Dict
 from uuid import UUID
 from datetime import date, datetime, timedelta
 
@@ -8,13 +9,13 @@ class Student(BaseModel):
     id: UUID
     name: str
     date_of_birth: date
-    GPA: confloat(ge=0.0, le=5.0)
+    GPA: Annotated[float, Field(ge=0.0, le=5.0)]
     course: str | None
     department: DepartmentEnum
     fees_paid: bool
 
-    @validator("date_of_birth")
-    def ensure_16_or_older(cls, value: date) -> bool:
+    @field_validator("date_of_birth")
+    def ensure_16_or_older(cls, value: date) -> date:
         sixteen_years_ago = datetime.now() - timedelta(days=16*365)
         sixteen_years_ago = sixteen_years_ago.date()
         
@@ -25,11 +26,11 @@ class Student(BaseModel):
 for item in data1:
     student = Student(**item)
     print("Object:", student)               # Pydantic model object -> Direct object
-    print("Dict:", student.dict())          # Dictionary representation -> A Dictionary with values as python objects
-    print("JSON:", type(student.json()))    # JSON representation -> A JSON string
+    print("Dict:", student.model_dump())          # Dictionary representation -> A Dictionary with values as python objects
+    print("JSON:", student.model_dump_json())    # JSON representation -> A JSON string
     print("-"*20)
 
-wrong_gpa_student = {
+wrong_gpa_student : Dict[str, Any] = {
     "id": "d15782d9-3d8f-4624-a88b-c8e836569df8",
     "name": "Eric Travix",
     "date_of_birth": "1995-05-25",
@@ -44,7 +45,7 @@ except Exception as e:
     print(f"Error: {e}")
     print("-"*20)
 
-underage_student = {
+underage_student : Dict[str, Any] = {
     "id": "d15782d9-3d8f-4624-a88b-c8e836569df8",
     "name": "Eric Travix",
     "date_of_birth": "2020-05-25",
@@ -59,7 +60,7 @@ except Exception as e:
     print(f"Error: {e}")
     print("-"*20)
 
-wrong_department_student = {
+wrong_department_student : Dict[str, Any] = {
     "id": "d15782d9-3d8f-4624-a88b-c8e836569df8",
     "name": "Eric Travix",
     "date_of_birth": "1995-05-25",
